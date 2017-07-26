@@ -1,0 +1,15 @@
+gEmailAddress = null;
+gEmailLocalStorageKey = "emailSessionKey";
+gStartLogDateKey = "startLogDate";
+gEndLogDateKey = "endLogDate";
+gStartLogId = 9999999; // big invalid ID
+gEndLogId = 9999999;
+gFromDate = null;
+gToDate = null;
+gReportType = 'month'; // default
+gCurrentAccountId = -1;  /* Current boat account whose reports are rendered */
+gCurrentAccountName = -1;  /* Name of gCurrentAccountId */
+gHighLightSelect = null;   /* Use for highlighting selected box when re-rendering. */
+gAccountAccordionOpen = -1;
+focusState = false;
+visibleState = false;

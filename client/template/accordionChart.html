@@ -1,0 +1,15 @@
+<template name="accordionChart">
+  <ul id="accordion-chart" class="menu">
+    {{#each product}}
+      <li><a href="#">{{productName}}</a> 
+        <span class="sum-small-font">(tot: {{total}}, avg: {{avg}}, min: {{min}}, max: {{max}})</span>
+        <ul>
+          <li><a href="#"></a>
+             <div id="{{id}}"></div>
+          </li>
+        </ul>
+      </li>
+    {{/each}}
+  </ul>
+</template>
+

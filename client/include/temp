@@ -1,0 +1,8 @@
+markProductCheckBox = function() {
+  var checkList = ProductList.find({});
+  checkList.forEach( function(tp) {
+     var boxId = ('#' + prepareProductNameForId(tp.product));
+     setCheckBox(boxId);
+  });
+  console.log("markCheckBox called");
+}

@@ -1,0 +1,30 @@
+<!-- This is a generic date range template which takes 3 parameters. -->
+<!-- This template use: tsega:bootstrap3-datetimepicker. The template onRendered has details -->
+<template name='dateRange'>
+   <!-- parameters: reportName, name, remote_method (e.g. get500RandomSerpSummary) -->
+   <form class="dateRange">
+     <div id="dateRange" name="{{name}}" >
+       <div class="row">
+         <div class="col-sm-1">
+            <b>From</b>
+         </div>
+         <div class="col-sm-4">
+           <div class="input-group datetimepicker">
+             <input type="text" class="form-control drange" id="{{name}}_fromPicker" 
+                        placeholder="From Date" value="{{m3old}}">
+           </div>
+         </div>
+         <div class="col-sm-1">
+            <b>To</b>
+         </div>
+         <div class="col-sm-4">
+           <div class="input-group datetimepicker">
+             <input type="text" class="form-control drange" id="{{name}}_toPicker" 
+                        placeholder="To Date" value="{{tomorrow}}">
+           </div>
+         </div>
+       </div> <!-- row -->
+     </div>
+   </form>
+   <div id="{{name}}_chart" data-method="{{remote_method}}"></div>
+</template>

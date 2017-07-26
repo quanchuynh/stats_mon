@@ -1,0 +1,63 @@
+/* CSS declarations go here */
+hr {
+  border-top:2px solid #083972;
+}
+
+.highlight-user-drop-down {
+   color: red;
+   background: yellow;
+}
+
+.domain { 
+  fill: none; 
+  stroke: black; 
+  stroke-width: 2; 
+} 
+
+/* Make tick of date bar chart blue color to suggest it can be clicked on. */
+.blue-tick .c3-axis-x .tick tspan {
+  /* stroke:    #6495ED; */
+  stroke:    blue;
+  stroke-width: 0.5; 
+  text-decoration:underline;
+}
+
+/* Used for Year-over-year stats catecogry selection box. */
+.right {
+  position: absolute;
+  right: 55px;
+  width: 150px;
+  border: 3px solid #73AD21;
+  padding: 10px;
+  z-index: 5;
+}
+
+#global-category-selection {
+  border: 3px solid #73AD21;
+  padding: 1px;
+}
+
+/* Padding from Navbar */
+body {
+  padding-top: 65px;
+}
+
+.brand {
+  background-color: #336699;
+  border: 1px solid #336699;
+  text-shadow: 2px 2px #ff0000;
+}
+
+.navbar .nav > .active > a, .navbar .nav > .active > a:hover, .navbar .nav > .active > a:focus
+{
+  background-color: #33CCCC;
+  border: 4px solid #CCFFFF;
+  border-style:inset;
+}
+
+.navbar .nav > li > a {
+  background-color: #F5FFFF;
+  border: 4px solid #CCFFFF;
+  border-style:outset;
+}
+

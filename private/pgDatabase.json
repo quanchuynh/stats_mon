@@ -1,0 +1,27 @@
+[
+  {
+    "conn": "postgres://userName:password@hostName/databaseName", 
+    "connectionName": "exampleDatabase",
+    "comment": "This database is not real. This is an example."
+  },
+  { 
+    "conn": "postgres://stats:stats@dcstats.db.p3.eb.com/hadoop_stats", 
+    "connectionName": "hadoopStats",
+    "comment": "Hadoop Stats. This is postgres db where webstats reporting tool access."
+  }, 
+  { 
+    "conn": "postgres://stats:stats@dcstats.db.dev.eb.com/dcstats", 
+    "connectionName": "devDcStats",
+    "comment": "Development dcstats, this where we push product_template_table and url_mapping to production db."
+  }, 
+  { 
+    "conn": "postgres://site_user:site_user@sitebuild.db.eb.com/site", 
+    "connectionName": "sitebuild",
+    "comment": "sitebuild db"
+  },
+  {
+    "conn": "postgres://stats:stats@dcstats.db.qa.eb.com/dcstats", 
+    "connectionName": "qaDcStats",
+    "comment": "Mendel database where associated topics and quiz mapping are."
+  }
+]

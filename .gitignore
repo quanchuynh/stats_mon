@@ -1,0 +1,5 @@
+node_modules/
+nohup*
+temp*
+*/temp*
+*/*/temp*

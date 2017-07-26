@@ -1,0 +1,8 @@
+<template name="selectAccountList">
+  <!-- Drop down menu used by custom account list table. -->
+  <select class="input-xlarge selectAccount select_account_drop_down" id="{{_id}}">
+     {{#each selectedList}}
+         <option value="{{acct_id}}" name="{{account_name}}">{{acct_id}}, {{account_name}}</option>
+     {{/each}}
+  </select>
+</template>

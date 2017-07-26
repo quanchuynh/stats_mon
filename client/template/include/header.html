@@ -1,0 +1,18 @@
+<template name="header">
+  <div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+      <!-- a class="brand" href="#">Stats Monitor</a> -->
+      <ul class="nav havbar-nav nav-pills">  <!-- nav-pills for vertical tabs -->
+        <li class="{{ activeRouteClass 'home' }}">
+          <a id="Product-Tab" href="{{pathFor 'home'}}">Product</a>
+        </li>
+        <li class="{{ activeRouteClass 'domain' }}">
+          <a id="Domain-Tab" href="{{pathFor 'domain'}}">Domain</a>
+        </li>
+        <li class="{{ activeRouteClass 'account' }}">
+          <a id="Account-Tab" href="{{pathFor 'account'}}">Account</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</template>

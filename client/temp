@@ -1,0 +1,29 @@
+
+/* if you want to make sure that you take control of all events, you have to make sure that you 
+ * override the addEventListener function before any event is registered.
+ */
+
+var originalAdd = EventTarget.prototype.addEventListener;
+EventTarget.prototype.addEventListener = function(event /* A String that specifies the name of the event */, 
+                                           fn /* function take event object */, 
+                                           useCapture
+                                           /* true - The event handler is executed in the capturing phase
+                                            * false- Default. The event handler is executed in the bubbling phase
+                                            */
+                                         ) 
+{
+  this.originalAddEventListener = originalAdd;
+  var eventWrappter = new EnventHandlerWrapper(fn);
+  this.originalAddEventListener(event, eventWrappter.wrapper, useCapture);
+};
+
+function EnventHandlerWrapper(originalHandler) {
+  this.originalHandler = originalHandler;
+}
+
+EnventHandlerWrapper.prototype.wrapper(evt, aa) {
+  console.log("EVENT STATS ID: " + evt.target.id + 
+              ", Type: " + evt.target.type  + 
+              ", Value: " + evt.target.value);
+  this.originalHandler(evt, aa);
+}

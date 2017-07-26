@@ -1,0 +1,20 @@
+<template name="createAccountList">
+   <form>
+      <p><b>Select a file </b><a href="#" title="{{listFileFormat}}"> (mouseover to see Format)</a> 
+         that contains a list of valid BOAT account IDs
+         <input class="listFileClass" type="file">
+      </p>
+      <input type="text" placeholder="Unique List Name" id="list-name" align="left">
+      <div align="left">
+         <textarea name="Description" cols="100" rows="2" placeholder="List Description" 
+             id="list-desc"></textarea>
+      </div>
+      <a href="#" title="{{accountListDescription}}">
+        <button id="create_list" align="left"> Create </button>
+      </a>
+   </form>
+</template>
+
+<!-- This form is intended for user to create a new List of BOAT IDs so that he/she can
+     investigate stats data for each or all accounts in this list.
+-->

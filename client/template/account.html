@@ -1,0 +1,43 @@
+<template name="account">
+  <div class="fixed-button-3">
+    <h3  align="center"><a href="#" title="{{accountStats}}" class="xref_text">Account Stats</a></h3>
+    {{> dateRange reportName="" name="" remote_method=""}}<br>
+    <div class="row">
+                     <div class="col-sm-1"></div>
+                     <div class="col-sm-5">{{> reportType}}</div>
+                     <div class="col-sm-3">{{> globalCategorySelection}}</div>
+    </div>
+  </div>
+  <p class="padding-table-long"></p>
+  <hr>
+  <ul id="account-accordion" class="menu">
+    <li><a href="#" title="{{enterAccount}}">Enter Account</a>
+      <ul>
+        <p>
+          <input type="text" placeholder="Boat Account ID" id="account_id" style="width:200px">
+          <input type="text" placeholder="Account Name" id="account_name" style="width:200px">
+          <select class="input-xlarge selectTopic" id="select_account">
+             {{#each account}}
+               <option value="{{account_id}}" name="{{account_name}}">{{account_id}}, {{account_name}}</option>
+             {{/each}}
+          </select>
+          <button id="submit_single_account">Run Report</button> 
+        </p>
+      </ul>
+    </li>
+    <li><a href="#" title="{{useAccountList}}">Use Account Watch Lists</a>
+      <ul> {{> accountList }} </ul>
+      <br>
+    </li>
+    <li><a href="#" title="{{createNewAccountList}}">Create a New Account Watch List</a>
+      <ul> {{> createAccountList }} </ul>
+    </li>
+  </ul>
+  <hr>
+  <h4> Graph Reports 
+    <span id="account-report-render" style="width:20px">0</span>
+    <div id="account_chart_list"></div>
+  </h4>
+  <button id="hide-accordion" class="fixed"><b>Hide Graphs</b></button>
+  {{> accordionChart }}
+</template>

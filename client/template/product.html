@@ -1,0 +1,21 @@
+<template name="product">
+  <p>
+    <div class="fixed-button-3">
+      <h3><center><a href="#" title="{{productStats}}">Product Stats</a></center></h3>
+      {{> dateRange reportName="studentReport" name="student" remote_method="getStudentReport" }} <br>
+      <button id="clear_select_list">Clear All</button>
+      <button id="select_all_list">Select All</button>
+      <button id="submit_query">Submit</button>
+      <select class="input-xlarge selectTopic" id="selectTopicDropDown">
+         {{#each productName}}
+            <option value="{{product}}" >{{product}}</option>
+         {{/each}}
+      </select>
+      {{> globalCategorySelection}}
+    </div>
+  </p>
+  <p class="padding-table-long">
+    <div id="productChartList"></div>
+    {{> tabular table=TabularTables.product id="product-table" class="table table-striped table-bordered"}}
+  </p>
+</template>

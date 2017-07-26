@@ -1,0 +1,25 @@
+.row .odd {
+  background-color: green;
+}
+
+.row .even {
+  background-color: #FFFFCC;
+}
+
+ul.pagination { float: left; list-style-type: none; }
+.paginate_button { 
+    float: left; 
+    width: 3.2em; 
+}
+.paginate_button.previous {
+    float: left; 
+    width: 5.2em; 
+}
+.paginate_button.next {
+    float: left; 
+    width: 4.2em; 
+}
+.paginate_button.active a {
+    color: blue;
+    font-weight: bold;
+}
