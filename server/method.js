@@ -79,6 +79,7 @@ Meteor.methods({
   getStatsForDomain: function(fromDate, toDate, domainName) {
     var queryList = queryConfig.findWhere({"connectionName": 'hadoopStats'});
     var query = _.sprintf(queryList.getQuery('domainMonthlyStats'), fromDate, toDate, domainName);
+    console.log("getStatsForDomain query:" + query);
     var queryResult = runHadoopQuery(query);
     return dateStatToChart(queryResult, 1000);
   },
@@ -136,6 +137,12 @@ getAccountName = function(accountId) {
 getProductList = function() {
   var queryList = queryConfig.findWhere({"connectionName": 'hadoopStats'});
   var query = _.sprintf(queryList.getQuery('productList'));
+  return runHadoopQuery(query);
+}
+
+getRootAccountList = function() {
+  var queryList = queryConfig.findWhere({"connectionName": 'hadoopStats'});
+  var query = _.sprintf(queryList.getQuery('rootAccountList'));
   return runHadoopQuery(query);
 }
 
@@ -230,6 +237,113 @@ runHadoopQuery = function(query, limit=5000) {
   return fut.wait();
 }
 
+statsSummary = function(accountId, start_date, end_date) {
+  console.log("testSingConnection: begin");
+  var fut = new Future();
+  singleConnect = new PgClient( pgDbConfig.findWhere({"connectionName": 'hadoopStats'}).conn );
+  var queryList = queryConfig.findWhere({"connectionName": 'hadoopStats'});
+
+  var query = _.sprintf(queryList.getQuery('topLevelAccountFunction'), accountId);
+  singleConnect.runSelect(query, function(err, result) {
+    if (err) {
+      console.error("Error, topLevelAccountFunction: " + err);
+      console.error("QUERY: " + query);
+    }
+  });
+
+  query = queryList.getQuery('createMonthTable');
+  singleConnect.runSelect(query, function(err, result) {
+    if (err) {
+      console.error("Error, createMonthTable: " + err);
+      console.error("QUERY: " + query);
+    }
+  });
+
+  var query = _.sprintf(queryList.getQuery('insertMonthTable'), start_date, end_date);
+  singleConnect.runSelect(query, function(err, result) {
+    if (err) {
+      console.error("Error, insertMonthTable: " + err);
+      console.error("QUERY: " + query);
+    }
+  });
+
+  query = queryList.getQuery('functionAllAccountIn');
+  singleConnect.runSelect(query, function(err, result) {
+    if (err) {
+      console.error("Error, functionAllAccountIn: " + err);
+      console.error("QUERY: " + query);
+    }
+  });
+
+  query = queryList.getQuery('tableAllAccountIn');
+  singleConnect.runSelect(query, function(err, result) {
+    if (err) {
+      console.error("Error, tableAllAccountIn: " + err);
+      console.error("QUERY: " + query);
+    }
+  });
+
+  query = _.sprintf(queryList.getQuery('topLevelAccount'), accountId);
+  singleConnect.runSelect(query, function(err, result) {
+    if (err) {
+      console.error("Error, topLevelAccount: " + err);
+      console.error("QUERY: " + query);
+    }
+  });
+
+  query = queryList.getQuery('topLevelAccountTable');
+  singleConnect.runSelect(query, function(err, result) {
+    if (err) {
+      console.error("Error, topLevelAccountTable: " + err);
+      console.error("QUERY: " + query);
+    }
+  });
+
+  query = _.sprintf(queryList.getQuery('rootAccountTable'), accountId);
+  singleConnect.runSelect(query, function(err, result) {
+    if (err) {
+      console.error("Error, rootAccountTable: " + err);
+      console.error("QUERY: " + query);
+    }
+  });
+
+  query = queryList.getQuery('includeRootAccount');
+  singleConnect.runSelect(query, function(err, result) {
+    if (err) {
+      console.error("Error, includeRootAccount: " + err);
+      console.error("QUERY: " + query);
+    }
+  });
+
+  query = queryList.getQuery('summaryStatsInRange');
+  singleConnect.runSelect(query, function(err, result) {
+    if (err) {
+      console.error("Error, summaryStatsInRange: " + err);
+      console.error("QUERY: " + query);
+    }
+  });
+
+  query = queryList.getQuery('summaryReportTable');
+  singleConnect.runSelect(query, function(err, result) {
+    if (err) {
+      console.error("Error, summaryReportTable: " + err);
+      console.error("QUERY: " + query);
+    }
+  });
+
+  query = queryList.getQuery('getSummaryReport');
+  singleConnect.runSelect(query, function(err, result) {
+    if (err) {
+      console.error("Error, getSummaryReport: " + err);
+      console.error("QUERY: " + query);
+    }
+    fut.return(result);
+  });
+  retVal = fut.wait();
+  singleConnect.disconnect();
+  console.log("testSingConnection: disconnected");
+  return retVal;
+}
 
 updateDomain = function() {
   result = getDomainProductList();
@@ -253,9 +367,21 @@ updateProduct = function() {
   }
 }
 
+updateRootAccount = function() {
+  result = getRootAccountList();
+  if (result.rows.length > 0)
+    RootAccount.remove({});
+  console.log("updateProduct: insert " + result.rows.length + " root accunts");
+  for (var i=0; i < result.rows.length; i++) {
+    var aRow = result.rows[i];
+    RootAccount.insert(aRow);
+  }
+}
+
 updateList = function() {
   updateDomain();
   updateProduct();
+  updateRootAccount();
 }
 
 fillAccountTable = function( ) {

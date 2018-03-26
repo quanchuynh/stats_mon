@@ -45,7 +45,8 @@
       "          , c.name category, sum(t.stat_count) as count ",
       "   FROM dc_stats_monthly_rollup t, product_template_group ptg, url_mapping m, web_stats_category c ",
       "   where  ",
-      "   t.stats_date >= '%s' and t.stats_date < '%s'",
+      "   t.stats_date between date_trunc('month', date '%s') and ", 
+      "     date( date_trunc('month', date '%s') + '1month' ) - integer '1'",
       "   and t.product_template_id != -1 and t.acct_id != -1",
       "   and ptg.id = t.product_template_id ",
       "   and t.url_mapping_id = m.id ",
@@ -392,6 +393,198 @@
       "   ) q ",
       " ) stats on (stats.month = dt.month and stats.year = dt.year) ",
       " order by dt.year, dt.month "
+    ],
+
+   "_comments": "This create a temporary function. Subsequent calls should be in the same session.",
+   "topLevelAccountFunction": [
+      " CREATE FUNCTION pg_temp.topLevelAccount(accountId int) ",
+      "   /* Get all accounts in the root account accountId */ ",
+      "   returns table(acct_id bigint, account_name varchar, table_name text) as ",
+      "   $$ ",
+      "   DECLARE ",
+      "   begin ",
+      "      return query EXECUTE ",
+      "       ' select distinct ah.account_id, ah.account_name, text ''table_'' || ah.account_id' || ",
+      "       ' from account_hier_expl ah' || ",
+      "       ' where ah.parent_id = ' || accountId; ",
+      "   end; ",
+      "   $$ LANGUAGE plpgsql "
+    ],
+
+   "createMonthTable": [
+      " CREATE TEMP TABLE months ",
+      " ( ",
+      "   start_date varchar, ",
+      "   end_date   varchar ",
+      " ) "
+    ],
+
+   "insertMonthTable": [
+      " insert into months ",
+      "   select p.start_date, ",
+      "     ( SELECT (date_trunc('month', p.start_date::date) +  ",
+      "          interval '1 month' - interval '1 day')::date ) as end_date ",
+      "   from ",
+      "     ( select generate_series(date_trunc('month', '%s'::date) ,  ",
+      "            '%s', interval '1 month')::date as start_date ) p "
+    ],
+
+   "_comments": "Get all descendant accounts in the given account ID including the given ID.",
+   "functionAllAccountIn": [
+      " CREATE FUNCTION pg_temp.allAccountIn(accountId int) ",
+      "   returns table(acct_id bigint, account_name varchar) as ",
+      "   $$ ",
+      "   DECLARE ",
+      "   begin ",
+      "      return query EXECUTE ",
+      "       ' select distinct ah.account_id, ah.account_name from account_hier_expl ah' || ",
+      "       ' where ah.account_id = ' || accountId || ",
+      "       ' OR ah.parent_id = ' || accountId || ",
+      "       ' OR ah.grand_id = ' || accountId || ",
+      "       ' OR ah.great_id = ' || accountId || ",
+      "       ' OR ah.great2_id = ' || accountId; ",
+      "   end; ",
+      "  $$ LANGUAGE plpgsql; "
+    ],
+
+   "_comments": "Create temp table table_name to contain all descendants' accounts. ",
+   "tableAllAccountIn": [
+     " CREATE FUNCTION pg_temp.createTopLevelAccountTable(accountId bigint, table_name text) ",
+     "   returns void as ",
+     "   $$ ",
+     "   DECLARE ",
+     "   begin ",
+     "       EXECUTE 'CREATE TEMP TABLE ' || table_name ||  ",
+     "           ' as select * from pg_temp.allAccountIn(' || accountId || ')'; ",
+     "   end; ",
+     "  $$ LANGUAGE plpgsql; "
+    ],
+
+   "_comments": "Create a table containing immediate children of the given root account ID (%d). ",
+   "topLevelAccount": [
+      "CREATE TEMP TABLE top_level_account as select * from pg_temp.topLevelAccount(%d) "
+    ],
+
+   "_comments": "Create set of tables each per top_level_account, and contains all its descendants.",
+   "topLevelAccountTable": [
+      " CREATE TEMP TABLE not_use as ",
+      "   select pg_temp.createTopLevelAccountTable(t.acct_id, t.table_name) || '1' from top_level_account t "
+    ],
+
+   "_comments": "create a table containing only the root account.",
+   "rootAccountTable": [
+      " CREATE TEMP TABLE root_account as ",
+      "   select distinct ah.account_id as acct_id, ah.account_name from account_hier_expl ah ",
+      "   where ah.account_id = (%d) "
+    ],
+
+   "_comments": "Insert root account into top_level_account.",
+   "includeRootAccount": [
+      " insert into top_level_account ",
+      " select acct_id, account_name, 'root_account' as table_name from root_account "
+    ],
+
+   "_comments": "Get summary stats for all accounts in given top_table",
+   "summaryStatsInRange": [
+      " CREATE FUNCTION pg_temp.statsInDateRange(start_date text, end_date text, top_table text) ",
+      "   returns table(acct_id bigint, account_name varchar, name varchar ",
+      "                 , pname varchar, tname varchar ",
+      "                 , month text, category varchar, count bigint) as ",
+      "   $$ ",
+      "   DECLARE ",
+      "     productNames text; ",
+      "     dtRange text; ",
+      "   begin ",
+      "     dtRange = '' || start_date || ''; ",
+      "     productNames = ' (''britannica online school edition (se)*'', ",
+      "                       ''britannica online school edition k-8/primary  (se)'', ",
+      "                       ''britannica online academic edition (bolae)'',  ",
+      "                       ''britannica escolar online (esclr)'', ",
+      "                       ''enciclopedia moderna'') '; ",
+      "      return query EXECUTE ",
+      "       '  SELECT bn.acct_id, bn.account_name, ' || ",
+      "       '     ptg.name as name, ptg.product_permission_name as pname, m.tier_name as tname, ' || ",
+      "       '     text ''' || start_date || ''' as month, ' ||  ",
+      "       '     c.name as category, CAST(sum(t.stat_count) as bigint) as count ' || ",
+      "       '  FROM  ' || ",
+      "       '     dc_stats_daily_rollup t, product_template_group ptg,  ' || ",
+      "       '     url_mapping m, web_stats_category c, ' || top_table || ' bn ' || ",
+      "       '  where t.stats_date between ''' || start_date || ''' and ' || ' ''' || end_date || ''' ' || ",
+      "       '  and t.product_template_id != -1 ' || ",
+      "       '  and ptg.id = t.product_template_id ' || ",
+      "       '  and t.url_mapping_id = m.id ' || ",
+      "       '  and m.category_id = c.id ' || ",
+      "       '  and t.acct_id = bn.acct_id ' || ",
+      "       '  and lower(ptg.name) in ' || productNames || ",
+      "       '  group by bn.acct_id, bn.account_name, ptg.name,  ' || ",
+      "       '     ptg.product_permission_name, m.tier_name, c.name '; ",
+      "   end; ",
+      "   $$ LANGUAGE plpgsql; "
+    ],
+
+   "_comments": "Create summary report table which contains requested data for requested top level accounts.",
+   "summaryReportTable": [
+       " CREATE TEMP TABLE summary_report as ",
+       " select top_account_id as account_id, top_account_name as account_name    ",
+       "     , name, pname, tname, month ",
+       "     , sum(Document) as document, sum(Media) as media , sum(Queries) as queries ",
+       "     , sum(Workspace) as workspace, sum(total_pg_view) as total_pg_view ",
+       " from ",
+       " ( ",
+       "   select tp.acct_id as top_account_id  ",
+       "     , tp.account_name  as top_account_name  ",
+       "     , p.acct_id , p.account_name , p.name , p.pname , p.tname , p.month ",
+       "     , max(case when p.category = 'Documents' then p.count else null end) as Document ",
+       "     , max(case when p.category = 'Media' then p.count else null end) as Media ",
+       "     , max(case when p.category = 'Queries' then p.count else null end) as Queries ",
+       "     , max(case when p.category = 'Workspace' then p.count else null end) as Workspace ",
+       "     , sum(p.count) as total_pg_view ",
+       "   from top_level_account tp ",
+       "     , months mn ",
+       "     , pg_temp.statsInDateRange(mn.start_date, mn.end_date, tp.table_name) p ",
+       "   group by tp.acct_id, tp.account_name, p.acct_id, p.account_name, p.pname, p.tname, p.name, p.month ",
+       " ) q  ",
+       " group by top_account_id, top_account_name, name, pname, tname, month"
+     ],
+
+   "getSummaryReport": [
+      " select ",
+      "   account_id",
+      "   ,account_name",
+      "   ,name as product_name",
+      "   ,pname as permission_name",
+      "   ,tname as Subcategory",
+      "   ,month ",
+      "   ,document",
+      "   ,media",
+      "   ,queries",
+      "   ,workspace",
+      "   ,total_pg_view",
+      " from summary_report",
+      " order by account_id, account_name, name, pname, tname, month"
+     ],
+
+   "rootAccountList": [
+      " select distinct bt.acct_id, bt.account_name ",
+      " from boat_account bt ",
+      "      , (select distinct account_id from permission where status = 0) ah ",
+      " where bt.parent_account_id is null ",
+      " and bt.acct_id in ",
+      " ( ",
+      "   select parent_id from account_hier_expl ",
+      "   union ",
+      "   select grand_id from account_hier_expl ",
+      "   union ",
+      "   select great_id from account_hier_expl ",
+      "   union ",
+      "   select great2_id from account_hier_expl ",
+      " ) ",
+      " and bt.realism != 'INTERNAL' and acct_id != 0 ",
+      " and bt.acct_id = ah.account_id "
+     ],
+
+   "testTopLevelAccountFunction": [
+      " select * from pg_temp.topLevelAccount(%d)"
     ]
  }
 ]

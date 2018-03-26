@@ -28,6 +28,12 @@ Meteor.startup(() => {
   }
   */
 
+  /*
+  retVal = statsSummary(655915, '2016-01-01', '2017-11-01');
+  csvString = convertToCSV(retVal.rows);
+  console.log(csvString);
+  */
+
 });
 
 testQuery = function( ) {
