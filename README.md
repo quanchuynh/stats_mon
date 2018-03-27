@@ -16,3 +16,9 @@ Web Application to Monitor Stats using C3.js for charts
    meteor add cfs:standard-packages
    meteor add cfs:filesystem
 13. meteor add keryi:meteor-dcaccordion
+
+Add React.js: see https://guide.meteor.com/react.html
+1. meteor npm install --save react react-dom
+2. To use 3rd react component:
+   meteor npm install --save them and import from within your app
+   e.g. meteor npm install --save griddle-react
