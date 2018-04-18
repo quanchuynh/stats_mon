@@ -9,3 +9,4 @@ AccountChart = new Mongo.Collection(null);
 ProductForSingleAccount = new Mongo.Collection(null); /* products returned for single account */
 
 WholeAccountList = new Mongo.Collection(null); /* {account_id: , account_name: } whole list from server. */
+

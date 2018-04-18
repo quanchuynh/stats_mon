@@ -1,3 +1,8 @@
+import { Template } from 'meteor/templating';
+import './template/account.html';
+import ReportTypeReact from './template/UI/ReportType';
+
+
 var minDigitForQuery = 0;   // minimum # of characters entered before sending query.
 var minCharForQuery = 1;  // minimum # of characters entered before sending query.
 var maxDisplayList = 30;
@@ -25,6 +30,10 @@ Template.account.helpers({
     return msg;
   },
 
+  reportTypeReact() {
+    return ReportTypeReact;
+  },
+
   enterAccount: function() {
     var msg = "Enter either account ID or name to run starts report on\n";
     return msg;
@@ -48,13 +57,13 @@ Template.account.helpers({
 
 Template.account.events({
   'click .c3-axis-x .tick tspan': function(ev, template) {
-    console.log("Click on a tick: " + ev.currentTarget.firstChild.data);
-    console.log("This ID:  " + this.id + ", product: " + this.productName);
+    console.debug("Click on a tick: " + ev.currentTarget.firstChild.data);
+    console.debug("This ID:  " + this.id + ", product: " + this.productName);
     var startOfMonth = moment(ev.currentTarget.firstChild.data).startOf('month');
     var endOfMonth = moment(ev.currentTarget.firstChild.data).endOf('month');
-    console.log("This ID:  " + gCurrentAccountId + ", product: " + this.productName + 
-                ", account: " + gCurrentAccountName);
-    console.log("startOfMonth: " + startOfMonth.format("YYYY-MM-DD") + 
+    console.debug("This ID:  " + GlobalState.currentAccountId() + ", product: " + this.productName + 
+                ", account: " + GlobalState.currentAccountName());
+    console.debug("startOfMonth: " + startOfMonth.format("YYYY-MM-DD") + 
                 ", endOfMonth: " + endOfMonth.format("YYYY-MM-DD"));
     var tInfo = getDateRangeParam();
     var fromPicker = $('#' + tInfo.fromDatePicker);
@@ -65,12 +74,12 @@ Template.account.events({
     Session.set(tInfo.fromDateKey, fromPicker.val());
     Session.set(tInfo.toDateKey, toPicker.val());
     $('#report-type-item').val('day');
-    gReportType = 'day';
-    renderAccountReport(gCurrentAccountId, gCurrentAccountName);
+    GlobalState.updateReportType('day');
+    renderAccountReport(GlobalState.currentAccountId(), GlobalState.currentAccountName());
   },
 
   'click #accordion-chart': function(ev, template) {
-    console.log("Accordion click event");
+    console.debug("Accordion click event");
   },
 
   'change .statCategory': function(ev, template) {
@@ -116,7 +125,7 @@ Template.account.events({
 
   'click #hide-accordion': function(ev, template) {
      ev.preventDefault();
-     console.log("Hide accordion");
+     console.debug("Hide accordion");
      $("#accordion-chart li ul").hide();
   },
 
@@ -190,7 +199,7 @@ delayRender = function() {
 
 updateAccountSelectList =  function(err, result, whichToUpdate) {
   /* Update account list in 'Enter Account' section */
-  if (err) { console.log("Error: " + err); return; }
+  if (err) { console.error("Error: " + err); return; }
   if (result.rows.length > 0) AccountList.remove({});
   else return;
 
@@ -235,8 +244,12 @@ renderResultChart = function(result) {
       chartList = dynamicChartListElement(productAsId);
     }
     if (aChart.chartType == "date") {
-      var hotlink = (gReportType == 'month');
-      var xLabel = xLabelFromReportType(gReportType);
+
+      var currentReportType = GlobalState.reportType();
+      console.debug("Report Type: " + currentReportType);
+
+      var hotlink = (currentReportType == 'month');
+      var xLabel = xLabelFromReportType(currentReportType);
       chartObject = renderChart(aChart.chartId, aChart.chartData, aChart.title, chartList, 'Unit', 
                        aChart.subtitle, hotlink, xLabel);
     }
@@ -291,7 +304,6 @@ processAccountOnId = function(accountId, accountSearchSequence) {
       var accountId = $('#account_id').val();
       qResult = result.queryResult;
       if (qResult.rows.length == 0) {
-        // console.log("No matching account found for name: " + accountName);
         return;
       }
       var whichToUpdate = 'account_name';   /* User change ID, update name to match */
@@ -311,12 +323,10 @@ processAccountOnName = function(accountName, accountSearchSequence) {
       var accountName = $('#account_name').val();
       qResult = result.queryResult;
       if (qResult.rows.length == 0) {
-        // console.log("No matching account found for name: " + accountName);
         return;
       }
       var whichToUpdate = 'account_id';   /* User change name, update ID to match */
       if (result.sequence < accountName.length) {
-        // console.log("Longer name entered, abandon short name"); 
         processAccountOnName(accountName, accountName.length);
         return;
       }
@@ -352,7 +362,7 @@ processAccountOnNameFastQuery = function(accountName, accountSearchSequence) {
       var accountName = $('#account_name').val();
       qResult = result.queryResult;
       if (qResult.rows.length == 0) {
-        console.log("Switch to slower more complete query");
+        console.debug("Switch to slower more complete query");
         processAccountOnName(accountName, accountName.length);
         return;
       }

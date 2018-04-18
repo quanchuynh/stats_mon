@@ -8,6 +8,6 @@ var blur = 0;
 var focus = 0;
 
 trackFocusState();
-console.log("Hidden property: " + getHiddenProp());
+console.debug("Hidden property: " + getHiddenProp());
 
 addVisibilityChangeListener();

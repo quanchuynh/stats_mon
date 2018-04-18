@@ -26,7 +26,7 @@ Template.createAccountList.events({
   'change .listFileClass': function(ev) {
      /* ev.srcElement.files: does not work. From debugger currentTarget  */
      _.each(ev.currentTarget.files, function(file) {
-       console.log("Selected file: " + file.name);
+       console.debug("Selected file: " + file.name);
        gFile = file;
      });
   },

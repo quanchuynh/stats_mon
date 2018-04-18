@@ -1,0 +1,13 @@
+fixed-control-pannel {
+  position: fixed;
+  top: 50px;
+  align: center;
+  background: white;
+  background-color: #F5FFFF;
+  opacity: 1.9;
+  z-index: 10; /* make this a high z-index so other hidden behind it. */
+  border: 4px solid #73AD21;
+  border-radius: 10px;
+  border-style:ridge;
+}
+

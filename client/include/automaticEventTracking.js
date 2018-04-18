@@ -14,11 +14,11 @@ trackFocusState = function() {
     if (prevType != e.type) {   //  reduce double fire issues
       switch (e.type) {
         case "blur":
-          console.log("Blured " + blur++);
+          console.debug("Blured " + blur++);
           focusState = false;
           break;
         case "focus":
-          console.log("Focused " + focus++);
+          console.debug("Focused " + focus++);
           focusState = true;
           break;
       }
@@ -62,18 +62,18 @@ addVisibilityChangeListener = function() {
   var visProp = getHiddenProp();
   if (visProp) {
     var evtname = visProp.replace(/[H|h]idden/,'') + 'visibilitychange';
-    console.log("Register event: " + evtname);
+    console.debug("Register event: " + evtname);
     document.addEventListener(evtname, visChange);
   }
 }
 
 visChange = function() {
   if (isHidden()) {
-    console.log("Hidden " + hidden++);
+    console.debug("Hidden " + hidden++);
     visibleState = false;
   }
   else {
-    console.log("Visible " + visible++);
+    console.debug("Visible " + visible++);
     visibleState = true;
   }
 }
@@ -94,7 +94,7 @@ EventTarget.prototype.addEventListener = function(
   this.originalAddEventListener = originalAdd;
   this.originalAddEventListener(event, function(evt) {
       target = evt.target;
-      console.log("EVENT TARGET: " + target + 
+      console.debug("EVENT TARGET: " + target + 
                   ", tag name: " + target.tagName +
                   ", node name: " + target.nodeName +
                   ", ID: " + target.id +
@@ -123,16 +123,16 @@ function scollHandlerWrapper(evt) {
   // Need to handle all events which are not added by addEventListener()
   if (evt) {
       target = evt.target;
-      console.log("Scroll EVENT TARGET: " + target + 
+      console.debug("Scroll EVENT TARGET: " + target + 
                   ", tag name: " + target.tagName +
                   ", node name: " + target.nodeName +
                   ", ID: " + target.id +
                   ", URL: " + target.baseURI +
                   ", value: " + target.value + ", type: " + 'scroll');
   } 
-  else console.log("Scroll ...");
+  else console.debug("Scroll ...");
   if (originalScollHandler) {
-    console.log("Found originalScollHandler");
+    console.debug("Found originalScollHandler");
     originalScollHandler(evt);
   }
 }
@@ -145,7 +145,7 @@ $('*').on("click",
   function(e) {
     if (this === e.target) {
       // Handle only the element where click occurs (no propagation).
-      console.log('You click: ' + e.target.id);
+      console.debug('You click: ' + e.target.id);
     }
   }
 );

@@ -34,6 +34,7 @@ Meteor.methods({
   },
 
   getStatsForAccount: function(boatAccountId, fromDate, toDate, reportType, productName = 'all') {
+    console.log("getStatsForAccount, reportType: " + reportType); 
     /* Stats for the given boatAccountId within date range. The return result is suitable for rendering charts */
     return getStatsChartForAccount(parseInt0(boatAccountId), fromDate, toDate, reportType, productName);
   },

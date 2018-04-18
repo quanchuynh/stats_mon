@@ -22,3 +22,11 @@ Add React.js: see https://guide.meteor.com/react.html
 2. To use 3rd react component:
    meteor npm install --save them and import from within your app
    e.g. meteor npm install --save griddle-react
+
+Full Blown React:
+1. meteor npm install --save "react-router-dom"
+2. meteor npm install --save "react-redux"
+
+React Component in Blaze
+1.  meteor add react-template-helper
+1.  meteor add react-meteor-data  (for integrating meteor data system)

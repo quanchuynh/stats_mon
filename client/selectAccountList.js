@@ -32,7 +32,7 @@ Template.selectAccountList.events({
   'click .select_account_drop_down': function(ev, template) {
     var elementId = '#' + this._id;
     var boatId = $(elementId).val();
-    console.log("Boat ID: " + boatId);
+    console.debug("Boat ID: " + boatId);
     if (selectSameAccountId == boatId) {
       selectSameAccountId = -1;
       var accountName = $(elementId + ' option:selected').attr("name");
@@ -60,17 +60,18 @@ renderAccountReport = function(accountId, accountName) {
   var toDate = Session.get(tInfo.toDateKey);
   var fDt = moment(fromDate, "MM/DD/YYYY");         // from date-picker format
   var tDt = moment(toDate, "MM/DD/YYYY");
-  gToDate = toDate;
-  gFromDate = fromDate;
-  console.log("Query for date range: " + fromDate + " to " + toDate + ", Account: " + accountId.toString());
+  GlobalState.updateToDate(toDate);
+  GlobalState.updateFromDate(fromDate);
+  console.debug("Query for date range: " + fromDate + " to " + toDate + ", Account: " + accountId.toString());
   accountSearchSequence = 0;
   var statusUpdate = $('#account-report-render');
   statusUpdate.text(0);
   accountChartListElement().empty();
   ProductForSingleAccount.remove({});
-  Meteor.call('getStatsForAccount', accountId, fDt.format("YYYY-MM-DD"), tDt.format("YYYY-MM-DD"), gReportType,
+  Meteor.call('getStatsForAccount', accountId, fDt.format("YYYY-MM-DD"), tDt.format("YYYY-MM-DD")
+              , GlobalState.reportType(),
     function(err, result) {
-      if (err) { console.log("Error: " + err); return; }
+      if (err) { console.error("Error: " + err); return; }
       if (result.length > 0) {
         accountChart = result;
         categoryLookupChart = [];

@@ -54,13 +54,13 @@ updateDomainList = function(ev, itemId) {
    if (check) {
       var found = DomainList.findOne({domain: row.domain}); 
       if (!found) DomainList.insert({domain: row.domain, product: row.product});
-      console.log("Set box, Domain: " + row.domain + ", Product: " + row.product);
+      console.debug("Set box, Domain: " + row.domain + ", Product: " + row.product);
    }
    else {
       var cBox = checkBoxes.find(function(e) { return e.domain == row.domain && e.checked == true; });
       if (cBox) return;  //  found matching domain w/ different check (e.g. packs)
       DomainList.remove({domain: row.domain});
-      console.log("Clear box, Domain: " + row.domain + ", Product: " + row.product);
+      console.debug("Clear box, Domain: " + row.domain + ", Product: " + row.product);
    }
 }
 
@@ -87,10 +87,10 @@ updateProductList = function(ev, itemId) {
    if (check) {
       var found = ProductList.findOne({product: row.product}); 
       if (!found) ProductList.insert({product: row.product});
-      console.log("Set box, Product: " + row.product);
+      console.debug("Set box, Product: " + row.product);
    }
    else {
-      console.log("Clear box, Product: " + row.product);
+      console.debug("Clear box, Product: " + row.product);
       removeOneFromProductList({product: row.product});
    }
 }

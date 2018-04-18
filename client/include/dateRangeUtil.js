@@ -17,7 +17,7 @@ getDateRangeParam = function() {
   id.resultKey = id.name + '_result';
 
   id.log = function() {
-    console.log("date range params: " + JSON.stringify(id));
+    console.debug("date range params: " + JSON.stringify(id));
   }
   return id;
 }

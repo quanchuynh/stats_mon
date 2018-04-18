@@ -38,7 +38,6 @@ Template.product.rendered = function() {
     if (el) {
       el.val(ch.yoyStats.display);
     }
-    // console.log("Template.product.rendered, chartId: " + ch.yoyStats.chartId);
   });
   renderCategoryForProductChart(globalCategory);
   $('#global-category-selection').val(globalCategory);
@@ -86,7 +85,7 @@ Template.product.events({
       });
       emptyProductList();
       ProductChart.remove({});
-      // console.log("Unselected all product")
+      console.debug("Unselected all product")
       clearCheckbox();
     },
 
@@ -111,7 +110,7 @@ Template.product.events({
       var toDate = Session.get(tInfo.toDateKey);
       var fDt = moment(fromDate, "MM/DD/YYYY");         // from date-picker format
       var tDt = moment(toDate, "MM/DD/YYYY");
-      // console.log("Query for date range: " + fromDate + " to " + toDate);
+      console.debug("Query for date range: " + fromDate + " to " + toDate);
 
       productYoyChart = [];
       ProductChart.remove({});
@@ -128,14 +127,14 @@ Template.product.events({
         var storedChart = {key: charId}; 
         Meteor.call('getStatsForProduct', fDt.format("YYYY-MM-DD"), tDt.format("YYYY-MM-DD"), tp.product,
           function(err, result) {
-            if (err) { console.log("Error: " + err); return; }
+            if (err) { console.error("Error: " + err); return; }
             storedChart.monthlyStats = {chartId: charId, data: result, title: tp.product + " Monthly Stats"};
             renderChart(charId, result, tp.product + " Monthly Stats", chartList, 'Thousands');
           }
         );
         Meteor.call('getStatsForProductYOY', fDt.format("YYYY-MM-DD"), tDt.format("YYYY-MM-DD"), tp.product,
           function(err, result) {
-            if (err) { console.log("getStatsForDomainYOY Error: " + err); return; }
+            if (err) { console.error("getStatsForDomainYOY Error: " + err); return; }
             var yoyCharId = charId + "-yoy";
             var chart = renderChartCategory(yoyCharId, result.columns, tp.product + " Year-Over-Year Stats", 
                     chartList, result.categories, 'Thousands');
@@ -144,10 +143,10 @@ Template.product.events({
                                     queryName: result.queryName, documentName: result.documentName, 
                                     mediaName: result.mediaName, display: 'all'};
             productYoyChart.push({chartId: yoyCharId, chartObj: chart, storedChart: storedChart});
-            // console.log("Template.product.rendered, chartId: " + yoyCharId);
+            console.debug("Template.product.rendered, chartId: " + yoyCharId);
             ProductChart.insert(storedChart);
             var checkList = ProductList.find({});
-            // console.log("ProductList count: " + checkList.count());
+            console.debug("ProductList count: " + checkList.count());
           }
         );
       });

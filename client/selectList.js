@@ -40,7 +40,7 @@ Template.selectList.rendered = function() {
     if (el) {
       el.val(ch.yoyStats.display);
     }
-    console.log("Template.selectList.rendered, chartId: " + ch.yoyStats.chartId);
+    console.debug("Template.selectList.rendered, chartId: " + ch.yoyStats.chartId);
   });
   renderCategoryForDomainChart(globalCategory);
   $('#global-category-selection').val(globalCategory);
@@ -81,11 +81,11 @@ Template.selectList.events({
       DomainList.remove({});
       {
         checkList = DomainList.find(); 
-        console.log(checkList.count() + " domains after removed all");
+        console.debug(checkList.count() + " domains after removed all");
       }
       DomainChart.remove({});
       clearCheckbox();
-      console.log("Unselected all domains")
+      console.debug("Unselected all domains")
     },
 
   'click #select_all_list': function(ev, template) {
@@ -110,7 +110,7 @@ Template.selectList.events({
       var toDate = Session.get(tInfo.toDateKey);
       var fDt = moment(fromDate, "MM/DD/YYYY");         // from date-picker format
       var tDt = moment(toDate, "MM/DD/YYYY");
-      console.log("Query for date range: " + fromDate + " to " + toDate);
+      console.debug("Query for date range: " + fromDate + " to " + toDate);
 
       domainYoyChart = [];
       DomainChart.remove({});
@@ -119,7 +119,7 @@ Template.selectList.events({
         alert("No domain selected. Please select at least 1 domain for stats reporting.") 
         return;
       }
-      console.log(checkList.count() + " selected domains");
+      console.debug(checkList.count() + " selected domains");
 
       var chartList = domainChartListElement();
       chartList.empty();  // Remove all charts first.
@@ -128,14 +128,14 @@ Template.selectList.events({
         var storedChart = {key: charId}; 
         Meteor.call('getStatsForDomain', fDt.format("YYYY-MM-DD"), tDt.format("YYYY-MM-DD"), tp.domain,
           function(err, result) {
-            if (err) { console.log("Error: " + err); return; }
+            if (err) { console.error("Error: " + err); return; }
             storedChart.monthlyStats = {chartId: charId, data: result, title: tp.domain + " Monthly Stats"};
             renderChart(charId, result, tp.domain + " Monthly Stats", chartList, 'Thousands');
           }
         );
         Meteor.call('getStatsForDomainYOY', fDt.format("YYYY-MM-DD"), tDt.format("YYYY-MM-DD"), tp.domain,
           function(err, result) {
-            if (err) { console.log("getStatsForDomainYOY Error: " + err); return; }
+            if (err) { console.error("getStatsForDomainYOY Error: " + err); return; }
             var yoyCharId = charId + "-yoy";
             var chart = renderChartCategory(yoyCharId, result.columns, tp.domain + " Year-Over-Year Stats", 
                     chartList, result.categories, 'Thousands');
@@ -144,7 +144,7 @@ Template.selectList.events({
                                     queryName: result.queryName, documentName: result.documentName, 
                                     mediaName: result.mediaName, display: 'all'};
             domainYoyChart.push({chartId: yoyCharId, chartObj: chart, storedChart: storedChart});
-            console.log("Template.selectList.rendered, chartId: " + yoyCharId);
+            console.debug("Template.selectList.rendered, chartId: " + yoyCharId);
             DomainChart.insert(storedChart);
           }
         );

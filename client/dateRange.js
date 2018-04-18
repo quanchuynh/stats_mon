@@ -3,20 +3,11 @@
  */
 Template.dateRange.helpers({
   tomorrow: function() {
-      if (gToDate) return gToDate;
-      gToDate = moment().add(1, 'day').format("MM/DD/YYYY");
-      return gToDate;
-
-      /* tInfo is not yet valid when this is called. 
-        var tInfo = getDateRangeParam();
-        Session.set(tInfo.toDateKey, now);
-        console.log("tomorrow(): " + now + ", key: " + tInfo.fromDateKey); */
+      return GlobalState.toDate();
   },
 
   m3old: function() {
-      if (gFromDate) return gFromDate;
-      gFromDate = moment().subtract(3, 'month').format("MM/DD/YYYY");
-      return gFromDate;
+      return GlobalState.fromDate();
   }
 });
 
@@ -34,8 +25,8 @@ Template.dateRange.rendered = function() {
       var tDt = moment(toDate, "MM/DD/YYYY");
   }
   else {
-    Session.set(tInfo.toDateKey, gToDate);
-    Session.set(tInfo.fromDateKey, gFromDate);
+    Session.set(tInfo.toDateKey, GlobalState.toDate());
+    Session.set(tInfo.fromDateKey, GlobalState.fromDate());
   }
 };
 
@@ -58,19 +49,19 @@ Template.dateRange.events({
       var toDate = Session.get(tInfo.toDateKey);
       var fDt = moment(fromDate, "MM/DD/YYYY");			// from date-picker format
       var tDt = moment(toDate, "MM/DD/YYYY");
-      gToDate = toDate;
-      gFromDate = fromDate;
+      GlobalState.updateToDate(toDate);
+      GlobalState.updateFromDate(fromDate);
    },
 
    /* Recommended by Meteor, use 'blur' instead of 'change' */
    'blur .drange': function(evt, template) {
       Session.set(evt.currentTarget.id, evt.currentTarget.value);
       evt.preventDefault();
-      // console.log("Change: " + evt.currentTarget.id + " to " + evt.currentTarget.value);
+      console.debug("Change: " + evt.currentTarget.id + " to " + evt.currentTarget.value);
 
       var tInfo = getDateRangeParam();
-      gFromDate = Session.get(tInfo.fromDateKey);
-      gToDate = Session.get(tInfo.toDateKey);
+      GlobalState.updateFromDate(Session.get(tInfo.fromDateKey));
+      GlobalState.updateToDate(Session.get(tInfo.toDateKey));
    }
 });
 

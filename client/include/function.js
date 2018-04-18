@@ -71,7 +71,7 @@ markDomainCheckBox = function() {
      var boxId = ('#' + tp.domain.replace(/\./g, '_')).trim();
      setCheckBox(boxId);
   });
-  console.log("markDomainCheckBox called");
+  console.debug("markDomainCheckBox called");
 }
 
 displayStatCategory = function(storedChart, displayOption, chart) {
@@ -84,25 +84,24 @@ displayStatCategory = function(storedChart, displayOption, chart) {
   switch (displayOption)
   {
     case 'query':
-      // console.log("displayStatCategory: " + 'display query');
       hideAllStatCategory(storedChart, chart);
       chart.show(storedChart.yoyStats.queryName);
       chart.legend.show(storedChart.yoyStats.queryName);
       break;
     case 'doc':
-      // console.log("displayStatCategory: " + 'display document');
+      console.debug("displayStatCategory: " + 'display document');
       hideAllStatCategory(storedChart, chart);
       chart.show(storedChart.yoyStats.documentName);
       chart.legend.show(storedChart.yoyStats.documentName);
       break;
     case 'media':
-      // console.log("displayStatCategory: " + 'display media');
+      console.debug("displayStatCategory: " + 'display media');
       hideAllStatCategory(storedChart, chart);
       chart.show(storedChart.yoyStats.mediaName);
       chart.legend.show(storedChart.yoyStats.mediaName);
       break;
     default:
-      // console.log("displayStatCategory: " + 'display all');
+      console.debug("displayStatCategory: " + 'display all');
       showAllStatCategory(storedChart, chart);
   }
 }
@@ -138,11 +137,11 @@ prepareProductNameForId = function(productName) {
   return idName;
 }
 
-xLabelFromReportType = function(reportType) {
+xLabelFromReportType = function(currentReportType) {
   /* Return x-axis labeling. See reportType.html for possible values. */
-  if (reportType == 'month') return 'Month';
-  if (reportType == 'day') return 'Date';
-  return reportType;  /* Unknown type. */
+  if (currentReportType == 'month') return 'Month';
+  if (currentReportType == 'day') return 'Date';
+  return currentReportType;  /* Unknown type. */
 }
 
 renderChart = function(charId, columnData, title, chartList, unit, subtitle = null, 
@@ -156,7 +155,7 @@ renderChart = function(charId, columnData, title, chartList, unit, subtitle = nu
   var chartIdS = ('#' + charId).trim();
   var el = $(chartIdS);
   if (el) {
-    /* console.log("Selected: " + chartIdS); */
+    console.debug("Selected: " + chartIdS);
     el.attr('name', 'Test Name');
     if (hotlink) el.attr('class', 'blue-tick');
   }
@@ -173,7 +172,7 @@ renderChart = function(charId, columnData, title, chartList, unit, subtitle = nu
          columns: columnData,
          type: 'bar',
          onclick: function(e) { 
-           console.log("This works w/ firefox, but no chrome or opera: " + e.value);
+           console.debug("This works w/ firefox, but no chrome or opera: " + e.value);
          }
        },
        bar: { width: { ratio: 0.4 } },
@@ -282,12 +281,12 @@ countDiplayProductItem = function() {
 
 markProductCheckBox = function() {
   var checkList = ProductList.find({});
-  console.log("markProductCheckBox count: " + checkList.count());
+  console.debug("markProductCheckBox count: " + checkList.count());
   checkList.forEach( function(tp) {
      var boxId = ('#' + prepareProductNameForId(tp.product));
      setCheckBox(boxId);
   });
-  console.log("markProductCheckBox called");
+  console.debug("markProductCheckBox called");
 }
 
 emptyProductList = function() {
@@ -299,8 +298,8 @@ removeOneFromProductList = function(obj) {
 }
 
 setCurrentBoatAccount = function(accountId, accountName) {
-  gCurrentAccountId = accountId;
-  gCurrentAccountName = accountName;
+  GlobalState.updateCurrentAccountId(accountId);
+  GlobalState.updateCurrentAccountName(accountName);
 }
 
 unhighlightUserSelectList = function( ) {

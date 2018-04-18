@@ -33,3 +33,5 @@ cfs:standard-packages
 cfs:filesystem
 keryi:meteor-dcaccordion
 dynamic-import
+react-template-helper
+react-meteor-data

@@ -11,7 +11,7 @@ Template.accordionChart.rendered = function() {
 
 renderProductAsAccordion = function() {
   var element = $('#accordion-chart');
-  // console.log("renderProductAsAccordion ...");
+  console.debug("renderProductAsAccordion ...");
   element.dcAccordion({
     eventType: 'click',
     menuClose: true,
