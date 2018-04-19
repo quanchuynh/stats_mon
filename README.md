@@ -29,4 +29,5 @@ Full Blown React:
 
 React Component in Blaze
 1.  meteor add react-template-helper
-1.  meteor add react-meteor-data  (for integrating meteor data system)
+2.  meteor add react-meteor-data  (for integrating meteor data system)
+
