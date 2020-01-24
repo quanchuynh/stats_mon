@@ -31,3 +31,4 @@ React Component in Blaze
 1.  meteor add react-template-helper
 2.  meteor add react-meteor-data  (for integrating meteor data system)
 
+try: meteor --port 2994 METEOR_OFFLINE_CATALOG=1

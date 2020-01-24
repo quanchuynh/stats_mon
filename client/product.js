@@ -1,5 +1,45 @@
+import jsPDF from 'jspdf';   /* meteor npm install jspdf */
+// import canvg from 'canvg';   /* meteor npm install canvg */ 
+import canvg from 'canvg-fixed';
+import {saveSvgAsPng} from 'save-svg-as-png';
+import {svg2pdf} from 'svg2pdf.js/dist/svg2pdf.min';
+// import Image from 'canvas-prebuilt';  /* meteor npm install canvas-prebuilt */
+
 productYoyChart = []; /* Store charts to render when switching tab */
 var globalCategory = 'all';
+
+function generatePdf() {
+  var doc = new jsPDF('p', 'pt', 'a4');
+  for (var i=0; i < productYoyChart.length; i++) {
+    var chartId = productYoyChart[i].chartId;
+    console.log("Generate chart ID: " + chartId + " into PDF document");
+
+    var elem = document.getElementById(chartId);
+    var svg = elem.getElementsByTagName('svg');
+    var svgText = elem.innerHTML;
+    svgText = svgText.replace(/<\/svg>.*$/g, '<\/svg>');
+    svgText = svgText.replace(/\r?\n|\r/g, '').trim();
+    doc.text('Chart ID: ' +  chartId);
+    /* saveSvgAsPng(elem, 'pgn_chart.png'); */
+    if (svgText) {
+      svgText = svgText.replace(/<\/svg>.*$/g, '<\/svg>');
+      svgText = svgText.replace(/\r?\n|\r/g, '').trim();
+  
+      var canvas = document.createElement('canvas');
+      var context = canvas.getContext('2d');
+    
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      /* canvg(canvas, svgText, {ImageClass: Image}); */
+      canvg(canvas, svgText);
+      var imgData = canvas.toDataURL('image/png');
+      /* doc.addImage(imgData, 'PNG', 40, 40, 400, 200); */
+ 
+      svg2pdf(svg, doc, { xOffset: 0, yOffset: 0, scale: 1 }); 
+    }
+  }
+  doc.save('pdf_chart.pdf');
+}
+
 
 Template.product.helpers({
   productName: function() {
@@ -42,6 +82,7 @@ Template.product.rendered = function() {
   renderCategoryForProductChart(globalCategory);
   $('#global-category-selection').val(globalCategory);
 }
+
 renderCategoryForProductChart = function(category) {
   for (var i=0; i < productYoyChart.length; i++) {
     var chart = productYoyChart[i];
@@ -54,8 +95,13 @@ renderCategoryForProductChart = function(category) {
 Template.product.events({
   'change #global-category-selection': function(ev, template) {
      ev.preventDefault();
-     renderCategoryForProductChart(ev.currentTarget.value);
      globalCategory = ev.currentTarget.value;
+     if (globalCategory = 'pdf') {
+       generatePdf();
+       console.log("Saved to PDF");
+     }
+     else
+       renderCategoryForProductChart(ev.currentTarget.value);
   },
 
   'change .statCategory': function(ev, template) {

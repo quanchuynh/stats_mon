@@ -209,7 +209,8 @@ getYoyStatsForAccount = function(levelName, accountId, startDate, endDate, produ
 
 getProductListForAccount = function(startDate, endDate, accountId) {
   var queryList = queryConfig.findWhere({"connectionName": 'hadoopStats'});
-  var query = _.sprintf(queryList.getQuery('productListForAccount'), startDate, endDate, accountId);
+  var query = _.sprintf(queryList.getQuery('productListForAccount'), accountId, accountId, accountId, accountId, accountId, 
+                   startDate, endDate);
   // console.log("getProductListForAccount query:\n" + query);
   return runHadoopQuery(query);
 }
