@@ -13,7 +13,7 @@
     "jspdf": "^1.4.1",
     "meteor-node-stubs": "~0.2.0",
     "react": "^16.2.0",
-    "react-dom": "^16.2.0",
+    "react-dom": "^16.2.1",
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.2.2",
     "save-svg-as-png": "^1.4.5",
